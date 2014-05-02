@@ -1,5 +1,6 @@
 #include "tlli-tests.h"
 #include "tlli.h"
+#include <stdio.h>
 
 TEST(InitTerminate, Basic, 0.0f,
      // initialisation

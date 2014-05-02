@@ -22,6 +22,13 @@ targetdir "build/release"
 project "tlli"
 kind "StaticLib"
 files { "src/**.c", "src/**.cpp" }
+excludes { "src/tlli-repl.c" }
+
+project "tlli-repl"
+kind "ConsoleApp"
+files { "src/tlli-repl.c" }
+targetname "tlli"
+links { "tlli", "readline" }
 
 --[[
 project "tlli-dynamic"

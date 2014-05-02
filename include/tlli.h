@@ -27,10 +27,12 @@ typedef struct _tlliValue   tlliValue;
 #define TLLI_SUCCESS    0
 #define TLLI_NO_CONTEXT 1
 #define TLLI_NO_INPUT   2
+#define TLLI_OUT_OF_MEM 3
 
 TLLI_EXPORT tlliReturn tlliInitContext     (tlliContext** context);
 TLLI_EXPORT tlliReturn tlliTerminateContext(tlliContext** context);
 TLLI_EXPORT tlliReturn tlliEvaluate        (tlliContext*  context, const char* str, tlliValue** rtn);
+TLLI_EXPORT tlliReturn tlliValueToString   (tlliValue* val, char** str, int size);
 
 TLLI_EXPORT tlliReturn tlliTerminateValue (tlliValue** value);
 

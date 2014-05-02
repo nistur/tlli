@@ -4,6 +4,10 @@
 
 #include "tlli.h"
 
+#define TLLI_VAL_NIL  0
+#define TLLI_VAL_BOOL 1
+#define TLLI_VAL_INT  2
+
 /***************************************
  * Library context
  * - holds current state
@@ -14,6 +18,8 @@ struct _tlliContext
 
 struct _tlliValue
 {
+	unsigned char type;
+	void* data;
 };
 
 /***************************************
@@ -35,5 +41,11 @@ extern const char* g_tlliErrors[];
     }
 
 
+#ifndef MAX
+# define MAX(a,b) (((a)>(b))?(a):(b))
+#endif
+#ifndef MIN
+# define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
 
 #endif/*__TLLI_INTERNAL_H__*/
