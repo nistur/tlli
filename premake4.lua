@@ -1,10 +1,10 @@
-solution "template"
+solution "tlli"
 language "C++"
 configurations { "Debug", "Release" }
 includedirs { "include", "src/include" }
 files { "include/**.h" }
 
-defines { "TMPL_BUILD" }
+defines { "TLLI_BUILD" }
 
 configuration "Debug"
 defines { "DEBUG" }
@@ -19,19 +19,20 @@ flags { "OptimizeSpeed",
 	"NoFramePointer" }
 targetdir "build/release"
 
-project "template"
+project "tlli"
 kind "StaticLib"
 files { "src/**.c", "src/**.cpp" }
 
-project "template-dynamic"
+--[[
+project "tlli-dynamic"
 kind "SharedLib"
 files { "src/**.c", "src/**.cpp" }
-targetname "template"
-
+targetname "tlli"
+--]]
 project "tests"
 kind "ConsoleApp"
 files { "tests/**.cpp" }
-links { "template" }
+links { "tlli" }
 configuration "Debug"
 postbuildcommands("build/debug/tests")
 configuration "Release"

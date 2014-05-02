@@ -1,7 +1,7 @@
-#include "tmpl.h"
+#include "tlli.h"
 
-tmplReturn g_tmplError;
-const char* g_tmplErrors[] = 
+tlliReturn g_tlliError;
+const char* g_tlliErrors[] = 
 {
     "Success",
     "Null context",

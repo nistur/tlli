@@ -1,14 +1,18 @@
 #pragma once
-#ifndef __TMPL_INTERNAL_H__
-#define __TMPL_INTERNAL_H__
+#ifndef __TLLI_INTERNAL_H__
+#define __TLLI_INTERNAL_H__
 
-#include "template.h"
+#include "tlli.h"
 
 /***************************************
  * Library context
  * - holds current state
  ***************************************/
-struct _tmplContext
+struct _tlliContext
+{
+};
+
+struct _tlliValue
 {
 };
 
@@ -16,20 +20,20 @@ struct _tmplContext
  * Some basic memory management wrappers
  ***************************************/
 #include <stdlib.h>
-#define tmplMalloc(x) (x*)malloc(sizeof(x))
-#define tmplFree(x)   free(x)
+#define tlliMalloc(x) (x*)malloc(sizeof(x))
+#define tlliFree(x)   free(x)
 
 /***************************************
  * Error handling
  ***************************************/
-extern tmplReturn  g_tmplError;
-extern const char* g_tmplErrors[];
-#define tmplReturn(x)				\
+extern tlliReturn  g_tlliError;
+extern const char* g_tlliErrors[];
+#define tlliReturn(x)				\
     {						\
-	g_tmplError = TMPL_##x;			\
-	return TMPL_##x;			\
+	g_tlliError = TLLI_##x;			\
+	return TLLI_##x;			\
     }
 
 
 
-#endif/*__TMPL_INTERNAL_H__*/
+#endif/*__TLLI_INTERNAL_H__*/
