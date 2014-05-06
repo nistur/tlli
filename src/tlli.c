@@ -64,6 +64,9 @@ tlliReturn tlliClearContext(tlliContext* context)
         TerminateMap(&context->symbolTable);
     context->symbolTable = InitMap();
     tlliAddFunction(context, "+", tlli_Add);
+    tlliAddFunction(context, "-", tlli_Sub);
+    tlliAddFunction(context, "*", tlli_Mul);
+    tlliAddFunction(context, "/", tlli_Div);
     tlliReturn(SUCCESS);
 }
 
