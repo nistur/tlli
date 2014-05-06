@@ -41,6 +41,6 @@ kind "ConsoleApp"
 files { "tests/**.cpp" }
 links { "tlli" }
 configuration "Debug"
-postbuildcommands("build/debug/tests")
+--postbuildcommands("build/debug/tests")
 configuration "Release"
 postbuildcommands("build/release/tests")

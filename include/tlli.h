@@ -24,17 +24,20 @@ typedef int tlliReturn;
 typedef struct _tlliContext tlliContext;
 typedef struct _tlliValue   tlliValue;
 
+typedef tlliValue*(*tlliFn)(int,tlliValue**);
+
 #define TLLI_SUCCESS    0
 #define TLLI_NO_CONTEXT 1
 #define TLLI_NO_INPUT   2
 #define TLLI_OUT_OF_MEM 3
+#define TLLI_PARSE_ERR  4
 
 TLLI_EXPORT tlliReturn tlliInitContext     (tlliContext** context);
 TLLI_EXPORT tlliReturn tlliTerminateContext(tlliContext** context);
-TLLI_EXPORT tlliReturn tlliEvaluate        (tlliContext*  context, const char* str, tlliValue** rtn);
-TLLI_EXPORT tlliReturn tlliValueToString   (tlliValue* val, char** str, int size);
+TLLI_EXPORT tlliReturn tlliEvaluate        (tlliContext*  context, char* str, tlliValue** rtn);
+TLLI_EXPORT tlliReturn tlliAddFunction     (tlliContext*  context, const char* name, tlliFn function);
 
-TLLI_EXPORT tlliReturn tlliTerminateValue (tlliValue** value);
+#include "tlli-types.h"
 
 TLLI_EXPORT const char*  tlliError();
 

@@ -23,13 +23,13 @@ int main(int argc, char** argv)
 		{
 			tlliValueToString(value, &buffer, 256);
 			printf("%s\n\t%s\n", tlliError(), buffer);
-			tlliTerminateValue(&value);
+			tlliReleaseValue(&value);
 			continue;
 		}
 
 		tlliValueToString(value, &buffer, 256);
 		printf("(%s)\n", buffer);
-		tlliTerminateValue(&value);
+		tlliReleaseValue(&value);
 
 	}
 	tlliTerminateContext(&context);
