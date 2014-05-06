@@ -54,7 +54,7 @@ char* tlliStrTok(char* str, char** lasts)
     rtn = tlliMallocArray(char, size+1);
     memcpy(rtn, start, size);
     rtn[size] = '\0';
-    *lasts = end + 1;
+    *lasts = end;
     return rtn;
 }
 
