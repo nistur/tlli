@@ -1,13 +1,25 @@
-TEMPLATE
-========
+TLLI - Tiny Little Lisp Interpeter
+==================================
 
-This is a basic template for my library projects. It includes the my testsuite and the standard files.
+This is just an experimentation at writing a lisp. I doubt it will ever be anywhere near usable. It's horrendously inefficient. It lacks a huge amount of features. But I don't care. That's not why I wrote it.
 
-To use this template. All the files should probably be renamed as templ is a baaaaaad prefix for anything useful. However, it's a template. It works as such.
+Current "features" include:
++
+-
+*
+/
+defun
 
-On linux it is possible to run the setup script to do the renaming eg (for a library called society):
+And that's it.
 
-~~~~~~
-./setup.sh society soc SOC
-~~~~~~
-The first parameter is the name of the name of the library, soc and SOC are prefixes used in the library functions and defines
+Issues
+------
+
+Too many to list.
+Seriously.
+
+However, one major thing I would like to change, apart from the lack of features, is that it does all the interpretation at runtime, live. That's a lot of string manipulation. Ideally I'd like to create some intermediate bytecode format. That would mean I could write out binary files too which I would like.
+
+Also the code is hideous. Written on a train journey and three bus journeys (and counting)
+
+Oh, and it leaks memory, I'm yet to write a garbage collector.
