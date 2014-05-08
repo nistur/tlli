@@ -39,7 +39,7 @@ tlliValue* tlli_Mul(int num, tlliValue** args)
 	{
 		int v = 0;
 		tlliValueToInt(args[i], &v);
-		val += v;
+		val *= v;
 	}
 
 	tlliValue* rtn;

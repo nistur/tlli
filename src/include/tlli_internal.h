@@ -9,7 +9,8 @@
 #define TLLI_VAL_BOOL 0x01
 #define TLLI_VAL_INT  0x02
 #define TLLI_VAL_STR  0x03
-#define TLLI_VAL_FN   0xFF
+#define TLLI_VAL_FN   0x0F
+#define TLLI_VAL_CFN  0xFF
 
 /***************************************
  * Library context
@@ -27,9 +28,16 @@ struct _tlliValue
 	void* data;
 };
 
-typedef struct _tlliFunction
+typedef struct _tlliCFunction
 {
 	tlliFn function;
+} tlliCFunction;
+
+typedef struct _tlliFunction
+{
+	char** paramlist;
+	char*  doc;
+	char** funcTokens;
 } tlliFunction;
 
 /***************************************

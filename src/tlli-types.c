@@ -56,6 +56,7 @@ tlliReturn tlliValueToString(tlliValue* val, char** str, int size)
         sprintf(buffer, "%s", (char*)val->data);
         break;
     case TLLI_VAL_FN:
+    case TLLI_VAL_CFN:
         sprintf(buffer, "function");
         break;
     }

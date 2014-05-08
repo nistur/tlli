@@ -92,12 +92,82 @@ tlliReturn tlliTerminateContext(tlliContext** context)
     tlliReturn(SUCCESS);
 }
 
-tlliReturn tlliParse(tlliContext* context, char** tokens, int* index, tlliValue** rtn)
+tlliReturn tlliDefun(tlliContext* context, char** tokens, int* index, tlliValue** rtn)
+{
+    if(context == 0)
+        tlliReturn(NO_CONTEXT);
+
+    tlliValue* fn = tlliMalloc(tlliValue);
+    fn->type = TLLI_VAL_FN;
+
+    int start = *index;
+    tlliFunction* functionDef = tlliMalloc(tlliFunction);
+
+    functionDef->paramlist = NULL;
+    functionDef->doc = NULL;
+    functionDef->funcTokens = NULL;
+
+    *index += 2;
+    //check for fn params after the name
+    if(strcmp(tokens[*index], "(") == 0)
+    {
+        *index += 1;
+        while(strcmp(tokens[*index], ")") != 0)
+        {
+            int len = strlen(tokens[*index]);
+            char* param = tlliMallocArray(char, len + 1);
+            memcpy(param, tokens[*index], len);
+            param[len] = 0;
+            sbpush(functionDef->paramlist, param);
+            *index += 1;
+        }
+    }
+    *index += 1;
+    // check for docstring
+    if(tokens[*index][0] == '"')
+    {
+        int len = strlen(tokens[*index]);
+        functionDef->doc = tlliMallocArray(char, len + 1);
+        memcpy(functionDef->doc, tokens[*index], len);
+        functionDef->doc[len] = 0;
+    }
+
+    int parenCount = 1;
+    sbpush(functionDef->funcTokens, "(");
+        while(parenCount > 0)
+        {
+            if(strcmp(tokens[*index], "(") == 0)
+            {
+                parenCount++;
+            }
+            else if(strcmp(tokens[*index], ")") == 0)
+            {
+                parenCount--;
+            }
+            int len = strlen(tokens[*index]);
+            char* tok = tlliMallocArray(char, len + 1);
+            memcpy(tok, tokens[*index], len);
+            tok[len] = 0;
+            sbpush(functionDef->funcTokens, tok);
+            *index += 1;   
+        }
+
+    fn->data = functionDef;
+
+    MapAdd(context->symbolTable, tokens[start + 1], fn);
+
+    if(rtn)
+        *rtn = fn;
+    tlliReturn(SUCCESS);
+}
+
+tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliValue** rtn, tlliValue** scope, tlliFunction* funcDef)
 {
     if(strcmp(tokens[*index], "(") != 0)
         tlliReturn(PARSE_ERR);
 
-    if(strcmp(tokens[*index + 1], ")") == 0)
+    *index += 1;
+    if(strcmp(tokens[*index], ")") == 0)
     {
         if(rtn)
         {
@@ -107,27 +177,37 @@ tlliReturn tlliParse(tlliContext* context, char** tokens, int* index, tlliValue*
         }
         tlliReturn(SUCCESS);
     }
-
-    tlliValue* fn = MapGet(context->symbolTable, tokens[*index + 1]);
-    if(fn == NULL || fn->type != TLLI_VAL_FN)
+    while(strcmp(tokens[*index], "(") == 0)
     {
-        if(rtn)
+        tlliParseFunc(context, tokens, index, rtn, scope, funcDef);
+    }
+
+    if(strcmp(tokens[*index], "defun") == 0)
+    {
+        return(tlliDefun(context, tokens, index, rtn));
+    }
+
+    tlliValue* fn = MapGet(context->symbolTable, tokens[*index]);
+    if(fn == NULL || (fn->type != TLLI_VAL_CFN && fn->type != TLLI_VAL_FN))
+    {
+        if(rtn && !*rtn)
         {
             *rtn = tlliMalloc(tlliValue);
             (*rtn)->type = TLLI_VAL_NIL;
             (*rtn)->data = NULL;
+            tlliReturn(PARSE_ERR);
         }
-        tlliReturn(PARSE_ERR);
+        tlliReturn(SUCCESS);
     }
 
-    *index += 2;
+    *index += 1;
     tlliValue** params = NULL;
     while(strcmp(tokens[*index], ")") && *index < sbcount(tokens))
     {
         tlliValue* val = NULL;
         if(strcmp(tokens[*index], "(") == 0)
         {
-            if(tlliParse(context, tokens, index, &val) != TLLI_SUCCESS)
+            if(tlliParseFunc(context, tokens, index, &val, scope, funcDef) != TLLI_SUCCESS)
             {
                 sbfree(params);
                 if(rtn)
@@ -157,12 +237,27 @@ tlliReturn tlliParse(tlliContext* context, char** tokens, int* index, tlliValue*
         }
         else
         {
-            val = MapGet(context->symbolTable, tokens[*index]);
+            char localVal = 0;
+            if(funcDef != NULL)
+            {
+                for(int i = 0; i < sbcount(funcDef->paramlist); ++i)
+                {
+                    if(strcmp(funcDef->paramlist[i], tokens[*index]) == 0)
+                    {
+                        val = scope[i];
+                        localVal = 1;
+                    }
+                }
+            }
+            if(localVal == 0)
+            {
+                val = MapGet(context->symbolTable, tokens[*index]);
+            }
         }
 
         if(val == NULL)
         {
-            if(rtn)
+            if(rtn && !*rtn)
             {
                 *rtn = tlliMalloc(tlliValue);
                 (*rtn)->type = TLLI_VAL_NIL;
@@ -175,11 +270,25 @@ tlliReturn tlliParse(tlliContext* context, char** tokens, int* index, tlliValue*
         *index += 1;
     }
 
-    tlliValue* val = ((tlliFunction*)fn->data)->function(sbcount(params), params);
+    tlliValue* val = NULL;
+    if(fn->type == TLLI_VAL_CFN)
+        val = ((tlliCFunction*)fn->data)->function(sbcount(params), params);
+    else if(fn->type == TLLI_VAL_FN)
+    {
+        tlliFunction* fnDef = ((tlliFunction*)fn->data);
+        int i = 0;
+        if(tlliParseFunc(context, fnDef->funcTokens, &i, &val, params, fnDef) != TLLI_SUCCESS)
+            tlliReturn(PARSE_ERR);
+    }
     if(rtn)
         *rtn = val;
 
     tlliReturn(SUCCESS);
+}
+
+tlliReturn tlliParse(tlliContext* context, char** tokens, int* index, tlliValue** rtn)
+{
+    return tlliParseFunc(context, tokens, index, rtn, NULL, NULL);
 }
 
 tlliReturn tlliEvaluate(tlliContext* context, char* str, tlliValue** rtn)
@@ -223,8 +332,8 @@ tlliReturn tlliAddFunction(tlliContext* context, const char* name, tlliFn functi
         tlliReturn(NO_INPUT);
 
     tlliValue* fnVal = tlliMalloc(tlliValue);
-    fnVal->type = TLLI_VAL_FN;
-    tlliFunction* fn = tlliMalloc(tlliFunction);
+    fnVal->type = TLLI_VAL_CFN;
+    tlliCFunction* fn = tlliMalloc(tlliCFunction);
     fn->function = function;
     fnVal->data = fn;
 
