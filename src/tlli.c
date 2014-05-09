@@ -1,7 +1,9 @@
 #include "tlli_internal.h"
 
 #include "util/stb.h"
+
 #include "maths.h"
+#include "io.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -67,6 +69,7 @@ tlliReturn tlliClearContext(tlliContext* context)
     tlliAddFunction(context, "-", tlli_Sub);
     tlliAddFunction(context, "*", tlli_Mul);
     tlliAddFunction(context, "/", tlli_Div);
+    tlliAddFunction(context, "print", tlli_Print);
     tlliReturn(SUCCESS);
 }
 
