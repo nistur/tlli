@@ -8,7 +8,8 @@
 #define TLLI_VAL_NIL  0x00
 #define TLLI_VAL_BOOL 0x01
 #define TLLI_VAL_INT  0x02
-#define TLLI_VAL_STR  0x03
+#define TLLI_VAL_NUM  0x03
+#define TLLI_VAL_STR  0x04
 #define TLLI_VAL_FN   0x0F
 #define TLLI_VAL_CFN  0xFF
 
@@ -39,6 +40,8 @@ typedef struct _tlliFunction
 	char*  doc;
 	char** funcTokens;
 } tlliFunction;
+
+void tlliInitStaticValues();
 
 /***************************************
  * Some basic memory management wrappers

@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 		}
 
 		tlliValueToString(value, &buffer, 256);
-		printf("(%s)\n", buffer);
+		printf("%s\n", buffer);
 		tlliReleaseValue(&value);
 
 	}

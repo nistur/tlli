@@ -4,6 +4,73 @@
 #include <stdio.h>
 #include <string.h>
 
+tlliValue* tlliNil;
+tlliValue* tlliTrue;
+tlliValue* tlliFalse;
+
+void tlliInitStaticValues()
+{
+    if(tlliNil == NULL)
+    {
+        tlliValue* val = tlliMalloc(tlliValue);
+        val->type = TLLI_VAL_NIL;
+        val->data = NULL;
+        tlliNil = val;
+    }
+
+    if(tlliTrue == NULL)
+    {
+        tlliValue* val = tlliMalloc(tlliValue);
+        val->type = TLLI_VAL_BOOL;
+        val->data = tlliMalloc(char);
+        *(char*)val->data = 1;
+        tlliTrue = val;
+    }
+
+    if(tlliFalse == NULL)
+    {
+        tlliValue* val = tlliMalloc(tlliValue);
+        val->type = TLLI_VAL_BOOL;
+        val->data = tlliMalloc(char);
+        *(char*)val->data = 0;
+        tlliFalse = val;
+    }
+}
+
+tlliReturn tlliValueToNumber(tlliValue* val, number* num)
+{
+    if(val == NULL || num == NULL)
+        tlliReturn(NO_INPUT);
+
+    switch(val->type)
+    {
+    case TLLI_VAL_NIL:
+        *num = 0;
+        break;
+    case TLLI_VAL_INT:
+        *num = *(int*)val->data;
+        break;
+    case TLLI_VAL_NUM:
+        *num = *(number*)val->data;
+        break;
+    }
+
+    tlliReturn(SUCCESS);
+}
+
+tlliReturn tlliNumberToValue(number num, tlliValue** val)
+{
+    if(val == NULL)
+        tlliReturn(NO_INPUT);
+
+    *val = tlliMalloc(tlliValue);
+    (*val)->type = TLLI_VAL_NUM;
+    (*val)->data = tlliMalloc(number);
+    *((number*)(*val)->data) = num;
+
+    tlliReturn(SUCCESS);
+}
+
 tlliReturn tlliValueToInt(tlliValue* val, int* num)
 {
     if(val == NULL || num == NULL)
@@ -17,6 +84,9 @@ tlliReturn tlliValueToInt(tlliValue* val, int* num)
     case TLLI_VAL_INT:
     	*num = *(int*)val->data;
     	break;
+    case TLLI_VAL_NUM:
+        *num = *(number*)val->data;
+        break;
     }
 
     tlliReturn(SUCCESS);
@@ -51,6 +121,13 @@ tlliReturn tlliValueToString(tlliValue* val, char** str, int size)
         break;
     case TLLI_VAL_INT:
         sprintf(buffer, "%d", (*(int*)val->data));
+        break;
+    case TLLI_VAL_NUM:
+#ifdef TLLI_USE_DOUBLE
+        sprintf(buffer, "%lf", *(number*)val->data);
+#else
+        sprintf(buffer, "%f", *(number*)val->data);
+#endif
         break;
     case TLLI_VAL_STR:
         sprintf(buffer, "%s", (char*)val->data);

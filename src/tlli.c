@@ -4,6 +4,7 @@
 
 #include "maths.h"
 #include "io.h"
+#include "conditional.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -60,6 +61,11 @@ char* tlliStrTok(char* str, char** lasts)
     return rtn;
 }
 
+tlliValue* tlliQuote(int num, tlliValue** args)
+{
+    return args[0];
+}
+
 tlliReturn tlliClearContext(tlliContext* context)
 {
     if(context->symbolTable)
@@ -69,12 +75,18 @@ tlliReturn tlliClearContext(tlliContext* context)
     tlliAddFunction(context, "-", tlli_Sub);
     tlliAddFunction(context, "*", tlli_Mul);
     tlliAddFunction(context, "/", tlli_Div);
+    tlliAddFunction(context, "<", tlli_LessThan);
     tlliAddFunction(context, "print", tlli_Print);
+    tlliAddFunction(context, "\'", tlliQuote);
+    tlliAddValue(context, "f", tlliFalse);
+    tlliAddValue(context, "t", tlliTrue);
     tlliReturn(SUCCESS);
 }
 
+
 tlliReturn tlliInitContext(tlliContext** context)
 {
+    tlliInitStaticValues();
     if(context == 0 )
         tlliReturn(NO_CONTEXT);
     *context = tlliMalloc(tlliContext);
@@ -164,6 +176,20 @@ tlliReturn tlliDefun(tlliContext* context, char** tokens, int* index, tlliValue*
     tlliReturn(SUCCESS);
 }
 
+void tlliSkipScope(char** tokens, int* index)
+{
+    *index += 1;
+    int parenCount = 1;
+    while(parenCount)
+    {
+        if(strcmp(tokens[*index], "(") == 0)
+            parenCount++;
+        if(strcmp(tokens[*index], ")") == 0)
+            parenCount--;
+        *index += 1;
+    }
+}
+
 tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliValue** rtn, tlliValue** scope, tlliFunction* funcDef)
 {
     if(strcmp(tokens[*index], "(") != 0)
@@ -188,6 +214,28 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
     if(strcmp(tokens[*index], "defun") == 0)
     {
         return(tlliDefun(context, tokens, index, rtn));
+    }
+    else if(strcmp(tokens[*index], "if") == 0)
+    {
+        tlliValue* test = 0;
+        *index += 1;
+        if(tlliParseFunc(context, tokens, index, &test, scope, funcDef) != TLLI_SUCCESS)
+            return g_tlliError;
+        *index += 1;
+        if(test == tlliTrue)
+        {
+            if( tlliParseFunc(context, tokens, index, rtn, scope, funcDef) != TLLI_SUCCESS)
+                return g_tlliError;
+            tlliSkipScope(tokens, index);
+        }
+        else
+        {
+            tlliSkipScope(tokens, index);
+            if( tlliParseFunc(context, tokens, index, rtn, scope, funcDef) != TLLI_SUCCESS)
+                return g_tlliError;
+        }
+        *index += 1;
+        tlliReturn(SUCCESS);
     }
 
     tlliValue* fn = MapGet(context->symbolTable, tokens[*index]);
@@ -327,6 +375,18 @@ tlliReturn tlliEvaluate(tlliContext* context, char* str, tlliValue** rtn)
     tlliReturn(SUCCESS);
 }
 
+tlliReturn tlliAddValue(tlliContext* context, const char* name, tlliValue* val)
+{
+    if(context == 0)
+        tlliReturn(NO_CONTEXT);
+    if(val == 0)
+        tlliReturn(NO_INPUT);
+
+    MapAdd(context->symbolTable, name, val);
+
+    tlliReturn(SUCCESS);
+}
+
 tlliReturn tlliAddFunction(tlliContext* context, const char* name, tlliFn function)
 {
     if(context == 0)
@@ -340,9 +400,7 @@ tlliReturn tlliAddFunction(tlliContext* context, const char* name, tlliFn functi
     fn->function = function;
     fnVal->data = fn;
 
-    MapAdd(context->symbolTable, name, fnVal);
-
-    tlliReturn(SUCCESS);
+    return tlliAddValue(context, name, fnVal);
 }
 
 const char* tlliError()
