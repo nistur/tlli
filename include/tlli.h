@@ -35,7 +35,7 @@ typedef tlliValue*(*tlliFn)(int,tlliValue**);
 TLLI_EXPORT tlliReturn tlliInitContext     (tlliContext** context);
 TLLI_EXPORT tlliReturn tlliTerminateContext(tlliContext** context);
 TLLI_EXPORT tlliReturn tlliEvaluate        (tlliContext*  context, char* str, tlliValue** rtn);
-TLLI_EXPORT tlliReturn tlliAddValue 	   (tlliContext* context, const char* name, tlliValue* val);
+TLLI_EXPORT tlliReturn tlliAddValue 	   (tlliContext*  context, const char* name, tlliValue* val);
 TLLI_EXPORT tlliReturn tlliAddFunction     (tlliContext*  context, const char* name, tlliFn function);
 
 #include "tlli-types.h"

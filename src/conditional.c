@@ -14,8 +14,10 @@ tlliValue* tlli_LessThan(int num, tlliValue** args)
 		number vx = 0;
 		tlliValueToNumber(args[i], &vx);
 		// check inverse so we don't bail too early
-		if(v1 > vx)
+		if(v1 >= vx)
+		{
 			return tlliFalse;
+		}
 	}
 	return tlliTrue;
 }

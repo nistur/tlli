@@ -76,10 +76,16 @@ tlliReturn tlliClearContext(tlliContext* context)
     tlliAddFunction(context, "*", tlli_Mul);
     tlliAddFunction(context, "/", tlli_Div);
     tlliAddFunction(context, "<", tlli_LessThan);
+    tlliAddFunction(context, "=", tlli_Equal);
     tlliAddFunction(context, "print", tlli_Print);
     tlliAddFunction(context, "\'", tlliQuote);
-    tlliAddValue(context, "f", tlliFalse);
-    tlliAddValue(context, "t", tlliTrue);
+    tlliAddValue(context, "#f", tlliFalse);
+    tlliAddValue(context, "#t", tlliTrue);
+
+    tlliEvaluate(context, "(defun <= (a b) (if (< a b) (#t) (if (= a b) (#t) (#f))))", NULL);
+    tlliEvaluate(context, "(defun > (a b) (if (<= a b) (#f) (#t)))", NULL);
+    tlliEvaluate(context, "(defun >= (a b) (if (< a b) (#f) (#t)))", NULL);
+
     tlliReturn(SUCCESS);
 }
 
@@ -208,7 +214,7 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
     }
     while(strcmp(tokens[*index], "(") == 0)
     {
-        tlliParseFunc(context, tokens, index, rtn, scope, funcDef);
+        return tlliParseFunc(context, tokens, index, rtn, scope, funcDef);
     }
 
     if(strcmp(tokens[*index], "defun") == 0)
@@ -239,16 +245,13 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
     }
 
     tlliValue* fn = MapGet(context->symbolTable, tokens[*index]);
-    if(fn == NULL || (fn->type != TLLI_VAL_CFN && fn->type != TLLI_VAL_FN))
+
+    if(fn == NULL && rtn)
     {
-        if(rtn && !*rtn)
-        {
-            *rtn = tlliMalloc(tlliValue);
-            (*rtn)->type = TLLI_VAL_NIL;
-            (*rtn)->data = NULL;
-            tlliReturn(PARSE_ERR);
-        }
-        tlliReturn(SUCCESS);
+        *rtn = tlliMalloc(tlliValue);
+        (*rtn)->type = TLLI_VAL_NIL;
+        (*rtn)->data = NULL;
+        tlliReturn(PARSE_ERR);
     }
 
     *index += 1;
@@ -330,6 +333,10 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
         int i = 0;
         if(tlliParseFunc(context, fnDef->funcTokens, &i, &val, params, fnDef) != TLLI_SUCCESS)
             tlliReturn(PARSE_ERR);
+    }
+    else
+    {
+        val = fn;
     }
     if(rtn)
         *rtn = val;
