@@ -294,7 +294,8 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
             char localVal = 0;
             if(funcDef != NULL)
             {
-                for(int i = 0; i < sbcount(funcDef->paramlist); ++i)
+	      int i;
+                for(i = 0; i < sbcount(funcDef->paramlist); ++i)
                 {
                     if(strcmp(funcDef->paramlist[i], tokens[*index]) == 0)
                     {
@@ -360,7 +361,8 @@ tlliReturn tlliEvaluate(tlliContext* context, char* str, tlliValue** rtn)
     // tokenise
     char** tokens = NULL;
     char* last;
-    for(char* tok = tlliStrTok(str, &last); tok; tok = tlliStrTok(NULL, &last))
+    char* tok;
+    for(tok = tlliStrTok(str, &last); tok; tok = tlliStrTok(NULL, &last))
     {
         sbpush(tokens, tok);
     }

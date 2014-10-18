@@ -42,7 +42,8 @@ void* MapGet(map* map_p, const char* key)
 {
 	if(map_p)
 	{
-		for(int i = 0; i < sbcount(map_p->keys); ++i)
+	  int i;
+		for(i = 0; i < sbcount(map_p->keys); ++i)
 		{
 			if(strcmp(map_p->keys[i], key) == 0)
 			{

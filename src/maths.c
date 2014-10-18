@@ -3,7 +3,8 @@
 tlliValue* tlli_Add(int num, tlliValue** args)
 {
 	int val = 0;
-	for(int i = 0; i < num; ++i)
+	int i;
+	for(i = 0; i < num; ++i)
 	{
 		int v = 0;
 		tlliValueToInt(args[i], &v);
@@ -18,8 +19,9 @@ tlliValue* tlli_Add(int num, tlliValue** args)
 tlliValue* tlli_Sub(int num, tlliValue** args)
 {
 	int val = 0;
+	int i;
 	tlliValueToInt(args[0], &val);
-	for(int i = 1; i < num; ++i)
+	for(i = 1; i < num; ++i)
 	{
 		int v = 0;
 		tlliValueToInt(args[i], &v);
@@ -34,8 +36,9 @@ tlliValue* tlli_Sub(int num, tlliValue** args)
 tlliValue* tlli_Mul(int num, tlliValue** args)
 {
 	int val = 0;
+	int i;
 	tlliValueToInt(args[0], &val);
-	for(int i = 1; i < num; ++i)
+	for(i = 1; i < num; ++i)
 	{
 		int v = 0;
 		tlliValueToInt(args[i], &v);
@@ -50,8 +53,9 @@ tlliValue* tlli_Mul(int num, tlliValue** args)
 tlliValue* tlli_Div(int num, tlliValue** args)
 {
 	int val = 0;
+	int i;
 	tlliValueToInt(args[0], &val);
-	for(int i = 1; i < num; ++i)
+	for(i = 1; i < num; ++i)
 	{
 		int v = 0;
 		tlliValueToInt(args[i], &v);
