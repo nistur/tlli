@@ -10,6 +10,12 @@ struct _map
 	void** 			values;
 };
 
+struct _map_it
+{
+  map* map;
+  int index;
+};
+
 map* InitMap()
 {
 	map* m = malloc(sizeof(map));
@@ -52,4 +58,38 @@ void* MapGet(map* map_p, const char* key)
 		}
 	}
 	return 0;
+}
+
+map_it* MapFind(map* map_p, const char* key)
+{
+  if(map_p)
+  {
+    int i;
+    for(i = 0; i < sbcount(map_p->keys); ++i)
+      if(strcmp(key, map_p->keys[i]) == 0)
+      {
+	map_it* it = malloc(sizeof(map_it));
+	it->map = map_p;
+	it->index = i;
+	return it;
+      }
+  }
+  return 0;
+}
+
+void* MapReplace(map_it* it, void* value)
+{
+  if(it && it->map && sbcount(it->map->keys) > it->index)
+  {
+    void* old = it->map->values[it->index];
+    it->map->values[it->index] = value;
+    return old;
+  }
+  return 0;
+}
+
+void MapFindFree(map_it* it)
+{
+  if(it)
+    free(it);
 }

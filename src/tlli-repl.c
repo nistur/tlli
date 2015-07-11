@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	tlliValue* value;
+	tlliValue* value = 0;
 	char* buffer = malloc(256);
 	while(1)
 	{

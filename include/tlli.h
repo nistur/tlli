@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 #ifndef __TEMPLATE_H__
 #define __TEMPLATE_H__
 #ifdef __cplusplus

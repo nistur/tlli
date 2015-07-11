@@ -175,7 +175,14 @@ tlliReturn tlliDefun(tlliContext* context, char** tokens, int* index, tlliValue*
 
     fn->data = functionDef;
 
-    MapAdd(context->symbolTable, tokens[start + 1], fn);
+    map_it* it = MapFind(context->symbolTable, tokens[start + 1]);
+    if(it)
+    {
+      tlliFree(MapReplace(it, fn));
+      MapFindFree(it);
+    }
+    else
+      MapAdd(context->symbolTable, tokens[start + 1], fn);
 
     if(rtn)
         *rtn = fn;
@@ -198,6 +205,8 @@ void tlliSkipScope(char** tokens, int* index)
 
 tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliValue** rtn, tlliValue** scope, tlliFunction* funcDef)
 {
+  if(tokens == 0)
+    tlliReturn(NO_INPUT);
     if(strcmp(tokens[*index], "(") != 0)
         tlliReturn(PARSE_ERR);
 
@@ -391,7 +400,14 @@ tlliReturn tlliAddValue(tlliContext* context, const char* name, tlliValue* val)
     if(val == 0)
         tlliReturn(NO_INPUT);
 
-    MapAdd(context->symbolTable, name, val);
+    map_it* it = MapFind(context->symbolTable, name);
+    if(it)
+    {
+      tlliFree(MapReplace(it, val));
+      MapFindFree(it);
+    }
+    else
+      MapAdd(context->symbolTable, name, val);
 
     tlliReturn(SUCCESS);
 }

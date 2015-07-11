@@ -1,10 +1,11 @@
 #ifndef __TLLI_TYPES_H__
 #define __TLLI_TYPES_H__
 
-#if TLLI_USE_DOUBLE
+#ifdef TLLI_USE_DOUBLE
 typedef double number;
 #else
-typedef float number;
+#define number float
+//typedef float number;
 #endif
 
 TLLI_EXPORT tlliReturn tlliValueToNumber   (tlliValue* val, number* num);
