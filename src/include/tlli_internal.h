@@ -1,4 +1,3 @@
-//#pragma once
 #ifndef __TLLI_INTERNAL_H__
 #define __TLLI_INTERNAL_H__
 

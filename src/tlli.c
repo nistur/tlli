@@ -8,7 +8,6 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <ctype.h>
 
 // reimplementation of strtok_r but without
 // the `sep` param as it should tokenise
@@ -178,7 +177,7 @@ tlliReturn tlliDefun(tlliContext* context, char** tokens, int* index, tlliValue*
     map_it* it = MapFind(context->symbolTable, tokens[start + 1]);
     if(it)
     {
-      tlliFree(MapReplace(it, fn));
+      tlliReleaseValue(MapReplace(it, fn));
       MapFindFree(it);
     }
     else
@@ -403,7 +402,7 @@ tlliReturn tlliAddValue(tlliContext* context, const char* name, tlliValue* val)
     map_it* it = MapFind(context->symbolTable, name);
     if(it)
     {
-      tlliFree(MapReplace(it, val));
+      tlliReleaseValue(MapReplace(it, val));
       MapFindFree(it);
     }
     else
