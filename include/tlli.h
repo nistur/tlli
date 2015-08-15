@@ -100,14 +100,76 @@ typedef tlliValue*(*tlliFn)(int,tlliValue**);
 #define TLLI_OUT_OF_MEM 3
 #define TLLI_PARSE_ERR  4
 
+/* tlliInitContext
+ *   Initialises an instance of the tlli library. Will set up the lisp environment
+ * params:
+ *   context - The context to set up
+ * returns:
+ *   TLLI_SUCCESS    - The context was initialised successfully
+ *   TLLI_NO_CONTEXT - NULL context was provided 
+ */
 TLLI_EXPORT tlliReturn tlliInitContext     (tlliContext** context);
+
+/* tlliTerminateContext
+ *   Cleans up an instance of the tlli library. Will release all allocated memory
+ * params:
+ *   context - The context to clean up
+ * returns:
+ *   TLLI_SUCCESS    - The context was cleaned up sucessfully
+ *   TLLI_NO_CONTEXT - NULL context was provided
+ */    
 TLLI_EXPORT tlliReturn tlliTerminateContext(tlliContext** context);
+
+/* tlliEvaluate
+ *   Evaluates a null terminated string containing tlli lisp.
+ * params:
+ *   context - The context in which to evaluate the string.
+ *   str     - The string to evaluate
+ *   rtn     - Optional return value
+ * returns:
+ *   TLLI_SUCCESS    - The string was evaluated successfully
+ *   TLLI_NO_CONTEXT - NULL context was provided
+ *   TLLI_NO_INPUT   - NULL input string given
+ */    
 TLLI_EXPORT tlliReturn tlliEvaluate        (tlliContext*  context, char* str, tlliValue** rtn);
+
+/* tlliAddValue
+ *   Adds a value to the environment with a given name
+ * params:
+ *   context - The context to which to add the value to
+ *   name    - The symbol name to assign the value to
+ *   val     - The value to add to the context
+ * returns:
+ *   TLLI_SUCCESS    - The value was added successfully
+ *   TLLI_NO_CONTEXT - NULL context was provided
+ *   TLLI_NO_INPUT   - NULL value provided
+ * Note:
+ *   I am aware that this isn't necessarily in the spirit of functional programming
+ * but it helps with debugging on occasion, so I've left it in
+ */
 TLLI_EXPORT tlliReturn tlliAddValue 	   (tlliContext*  context, const char* name, tlliValue* val);
+
+/* tlliAddFunction
+ *   Adds a C-function to the environment with a given name
+ * params:
+ *   context  - The context to which to add the function to
+ *   name     - The symbol name to assign the function to
+ *   function - The function to add to the context
+ * returns:
+ *   TLLI_SUCCESS    - The function was added sucessfully
+ *   TLLI_NO_CONTEXT - NULL context was provided
+ *   TLLI_NO_INPUT   - NULL function pointer provided
+ */    
 TLLI_EXPORT tlliReturn tlliAddFunction     (tlliContext*  context, const char* name, tlliFn function);
 
+/**************
+ * TLLI TYPES *
+ **************/    
 #include "tlli-types.h"
 
+/* tlliError
+ *   Returns a human-readable error message for the last TLLI function called
+ */    
 TLLI_EXPORT const char*  tlliError();
 
 #ifdef __cplusplus
