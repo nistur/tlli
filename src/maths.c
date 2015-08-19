@@ -3,6 +3,20 @@
 
 #include <stdio.h>
 
+static unsigned char tlli_Which_Arithmetic_Type(int num, tlliValue** args)
+{
+	int i;
+	for(i = 0; i < num; ++i) {
+		unsigned char t = args[i]->type;
+		if(t == TLLI_VAL_NUM) {
+			return t;
+		} else if(t != TLLI_VAL_INT) {
+			return TLLI_VAL_NIL;
+		}
+	}
+	return TLLI_VAL_NUM;
+}
+
 tlliValue* tlli_Num_Add(int num, tlliValue** args)
 {
 	number val = TLLI_NUMBER_ZERO;
@@ -37,21 +51,17 @@ tlliValue* tlli_Int_Add(int num, tlliValue** args)
 
 tlliValue* tlli_Add(int num, tlliValue** args)
 {
-	int i;
-	int allint = 1;
-	for(i = 0; i < num; ++i) {
-		char t = args[i]->type;
-		if(t == TLLI_VAL_NUM) {
-			allint = 0;
-			break;
-		} else if(t != TLLI_VAL_INT) {
-			return tlliNil;
-		}
-	}
-	if(allint == 0) {
+	unsigned char t = tlli_Which_Arithmetic_Type(num, args);
+	switch(t) {
+	case TLLI_VAL_NUM:
 		return tlli_Num_Add(num, args);
-	} else {
+		break;
+	case TLLI_VAL_INT:
 		return tlli_Int_Add(num, args);
+		break;
+	default:
+		return tlliNil;
+		break;
 	}
 }
 
