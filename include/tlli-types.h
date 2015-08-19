@@ -3,8 +3,10 @@
 
 #ifdef TLLI_USE_DOUBLE
 typedef double number;
+#define TLLI_NUMBER_ZERO 0.0 /* Avoid implicit conversions */
 #else
 #define number float
+#define TLLI_NUMBER_ZERO 0.0f /* Avoid implicit conversions */
 //typedef float number;
 #endif
 

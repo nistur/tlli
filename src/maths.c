@@ -1,6 +1,25 @@
 #include "maths.h"
+#include "tlli_internal.h"
 
-tlliValue* tlli_Add(int num, tlliValue** args)
+#include <stdio.h>
+
+tlliValue* tlli_Num_Add(int num, tlliValue** args)
+{
+	number val = TLLI_NUMBER_ZERO;
+	int i;
+	for(i = 0; i < num; ++i)
+	{
+		number v = TLLI_NUMBER_ZERO;
+		tlliValueToNumber(args[i], &v);
+		val += v;
+	}
+
+	tlliValue* rtn;
+	tlliNumberToValue(val, &rtn);
+	return rtn;
+}
+
+tlliValue* tlli_Int_Add(int num, tlliValue** args)
 {
 	int val = 0;
 	int i;
@@ -14,6 +33,26 @@ tlliValue* tlli_Add(int num, tlliValue** args)
 	tlliValue* rtn;
 	tlliIntToValue(val, &rtn);
 	return rtn;
+}
+
+tlliValue* tlli_Add(int num, tlliValue** args)
+{
+	int i;
+	int allint = 1;
+	for(i = 0; i < num; ++i) {
+		char t = args[i]->type;
+		if(t == TLLI_VAL_NUM) {
+			allint = 0;
+			break;
+		} else if(t != TLLI_VAL_INT) {
+			return tlliNil;
+		}
+	}
+	if(allint == 0) {
+		return tlli_Num_Add(num, args);
+	} else {
+		return tlli_Int_Add(num, args);
+	}
 }
 
 tlliValue* tlli_Sub(int num, tlliValue** args)
