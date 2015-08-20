@@ -49,6 +49,9 @@ tlliValue* tlli_Int_Add(int num, tlliValue** args)
 
 tlliValue* tlli_Add(int num, tlliValue** args)
 {
+	if (num < 1) {
+		return tlliNil; /* TODO: In future signal some kind of arity error */
+	}
 	unsigned char t = tlli_Which_Arithmetic_Type(num, args);
 	switch(t)
 	{
@@ -100,6 +103,9 @@ tlliValue* tlli_Int_Sub(int num, tlliValue** args)
 
 tlliValue* tlli_Sub(int num, tlliValue** args)
 {
+	if (num < 1) {
+		return tlliNil; /* TODO: In future signal some kind of arity error */
+	}
 	unsigned char t = tlli_Which_Arithmetic_Type(num, args);
 	switch(t)
 	{
@@ -151,6 +157,9 @@ tlliValue* tlli_Int_Mul(int num, tlliValue** args)
 
 tlliValue* tlli_Mul(int num, tlliValue** args)
 {
+	if (num < 2) {
+		return tlliNil; /* TODO: In future signal some kind of arity error */
+	}
 	unsigned char t = tlli_Which_Arithmetic_Type(num, args);
 	switch(t)
 	{
@@ -168,6 +177,9 @@ tlliValue* tlli_Mul(int num, tlliValue** args)
 
 tlliValue* tlli_Div(int num, tlliValue** args)
 {
+	if (num < 2) {
+		return tlliNil; /* TODO: In future signal some kind of arity error */
+	}
 	number val = 0;
 	int i;
 	tlliValueToNumber(args[0], &val);
