@@ -23,3 +23,5 @@ However, one major thing I would like to change, apart from the lack of features
 Also the code is hideous. Written on a train journey and three bus journeys (and counting)
 
 Oh, and it leaks memory, I'm yet to write a garbage collector.
+
+At this point, tlli supports a base 'number' type which can be defined to either be single or double precision floating point numbers. Ideally it should also support fixed point... for no other reason than it would be fun to implement and then it would run on machines with no floating point units. That's still a thing, right?
