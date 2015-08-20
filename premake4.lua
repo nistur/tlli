@@ -36,7 +36,6 @@ kind "SharedLib"
 files { "src/**.c", "src/**.cpp" }
 targetname "tlli"
 --]]
---[[
 project "tests"
 kind "ConsoleApp"
 files { "tests/**.cpp" }
@@ -45,4 +44,3 @@ configuration "Debug"
 --postbuildcommands("build/debug/tests")
 configuration "Release"
 postbuildcommands("build/release/tests")
---]]
