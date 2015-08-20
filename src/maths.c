@@ -104,10 +104,10 @@ tlliValue* tlli_Sub(int num, tlliValue** args)
 	switch(t)
 	{
 	case TLLI_VAL_NUM:
-		return tlli_Num_Add(num, args);
+		return tlli_Num_Sub(num, args);
 		break;
 	case TLLI_VAL_INT:
-		return tlli_Int_Add(num, args);
+		return tlli_Int_Sub(num, args);
 		break;
 	default:
 		return tlliNil;
@@ -115,7 +115,24 @@ tlliValue* tlli_Sub(int num, tlliValue** args)
 	}
 }
 
-tlliValue* tlli_Mul(int num, tlliValue** args)
+tlliValue* tlli_Num_Mul(int num, tlliValue** args)
+{
+	number val = 0;
+	int i;
+	tlliValueToNumber(args[0], &val);
+	for(i = 1; i < num; ++i)
+	{
+		number v = 0;
+		tlliValueToNumber(args[i], &v);
+		val *= v;
+	}
+
+	tlliValue* rtn;
+	tlliNumberToValue(val, &rtn);
+	return rtn;
+}
+
+tlliValue* tlli_Int_Mul(int num, tlliValue** args)
 {
 	int val = 0;
 	int i;
@@ -132,19 +149,36 @@ tlliValue* tlli_Mul(int num, tlliValue** args)
 	return rtn;
 }
 
+tlliValue* tlli_Mul(int num, tlliValue** args)
+{
+	unsigned char t = tlli_Which_Arithmetic_Type(num, args);
+	switch(t)
+	{
+	case TLLI_VAL_NUM:
+		return tlli_Num_Mul(num, args);
+		break;
+	case TLLI_VAL_INT:
+		return tlli_Int_Mul(num, args);
+		break;
+	default:
+		return tlliNil;
+		break;
+	}
+}
+
 tlliValue* tlli_Div(int num, tlliValue** args)
 {
-	int val = 0;
+	number val = 0;
 	int i;
-	tlliValueToInt(args[0], &val);
+	tlliValueToNumber(args[0], &val);
 	for(i = 1; i < num; ++i)
 	{
-		int v = 0;
-		tlliValueToInt(args[i], &v);
+		number v = 0;
+		tlliValueToNumber(args[i], &v);
 		val /= v;
 	}
 
 	tlliValue* rtn;
-	tlliIntToValue(val, &rtn);
+	tlliNumberToValue(val, &rtn);
 	return rtn;
 }
