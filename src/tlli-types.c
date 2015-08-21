@@ -158,6 +158,14 @@ tlliReturn tlliStringToValue(char* str, tlliValue** val)
 	tlliReturn(SUCCESS);
 }
 
+tlliReturn tlliRetainValue(tlliValue** value)
+{
+	if(value == NULL || *value == NULL) tlliReturn(NO_INPUT);
+
+	(*value)->ref++;
+	tlliReturn(SUCCESS);
+}
+
 tlliReturn tlliReleaseValue(tlliValue** value)
 {
     if(value == NULL || *value == NULL)
