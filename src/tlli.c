@@ -292,10 +292,32 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
         }
         else if( isdigit(tokens[*index][0]) )
         {
+            int len = strlen(tokens[*index]);
+            int dotcount = 0;
+            int i;
             val = tlliMalloc(tlliValue);
-            val->type = TLLI_VAL_INT;
-            val->data = tlliMalloc(int);
-            *(int*)val->data = atoi(tokens[*index]);
+            for (i = 0; i < len; ++i) {
+                if (tokens[*index][i] == '.') {
+                    ++dotcount;
+                }
+            }
+            switch(dotcount)
+            {
+            case 0:
+                val->type = TLLI_VAL_INT;
+                val->data = tlliMalloc(int);
+                *(int*)val->data = atoi(tokens[*index]);
+                break;
+            case 1:
+                val->type = TLLI_VAL_NUM;
+                val->data = tlliMalloc(number);
+                *(number*)val->data = (number)atof(tokens[*index]);
+                break;
+            default:
+                tlliFree(val);
+                g_tlliError = TLLI_PARSE_ERR;
+                return g_tlliError;
+            }
         }
         else
         {
