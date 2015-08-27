@@ -4,7 +4,11 @@ configurations { "Debug", "Release" }
 includedirs { "include", "src/include" }
 files { "include/**.h" }
 
-defines { "TLLI_BUILD" }
+if os.is("windows") then
+	defines { "TLLI_BUILD", "WIN32" }
+else
+	defines { "TLLI_BUILD" }
+end
 
 configuration "Debug"
 defines { "DEBUG" }
