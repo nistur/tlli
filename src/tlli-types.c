@@ -160,7 +160,7 @@ tlliReturn tlliStringToValue(char* str, tlliValue** val)
 
 tlliReturn tlliRetainValue(tlliValue* value)
 {
-	if(value == NULL || value == NULL) tlliReturn(NO_INPUT);
+	if(value == NULL) tlliReturn(NO_INPUT);
 
 	value->ref++;
 	tlliReturn(SUCCESS);
