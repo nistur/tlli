@@ -51,7 +51,7 @@ TLLI_EXPORT tlliReturn tlliStringToValue   (char* str, tlliValue** val);
  *   TLLI_SUCCESS   - The value was retained sucessfully
  *   TLLI_NO_INPUT  - NULL value passed
  */
-TLLI_EXPORT tlliReturn tlliRetainValue  (tlliValue** value);
+TLLI_EXPORT tlliReturn tlliRetainValue  (tlliValue* value);
 
 /* tlliReleaseValue
  *   Releases a tlliValue and cleans up the memory

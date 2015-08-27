@@ -158,11 +158,11 @@ tlliReturn tlliStringToValue(char* str, tlliValue** val)
 	tlliReturn(SUCCESS);
 }
 
-tlliReturn tlliRetainValue(tlliValue** value)
+tlliReturn tlliRetainValue(tlliValue* value)
 {
-	if(value == NULL || *value == NULL) tlliReturn(NO_INPUT);
+	if(value == NULL || value == NULL) tlliReturn(NO_INPUT);
 
-	(*value)->ref++;
+	value->ref++;
 	tlliReturn(SUCCESS);
 }
 
