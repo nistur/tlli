@@ -177,8 +177,9 @@ tlliReturn tlliDefun(tlliContext* context, char** tokens, int* index, tlliValue*
     map_it* it = MapFind(context->symbolTable, tokens[start + 1]);
     if(it)
     {
-      tlliReleaseValue(MapReplace(it, fn));
-      MapFindFree(it);
+        tlliValue* v = MapReplace(it, fn);
+        tlliReleaseValue(&v);
+        MapFindFree(it);
     }
     else
       MapAdd(context->symbolTable, tokens[start + 1], fn);
@@ -424,8 +425,9 @@ tlliReturn tlliAddValue(tlliContext* context, const char* name, tlliValue* val)
     map_it* it = MapFind(context->symbolTable, name);
     if(it)
     {
-      tlliReleaseValue(MapReplace(it, val));
-      MapFindFree(it);
+        tlliValue* v = MapReplace(it, val);
+        tlliReleaseValue(&v);
+        MapFindFree(it);
     }
     else
       MapAdd(context->symbolTable, name, val);
