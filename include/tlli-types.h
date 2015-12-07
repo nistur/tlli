@@ -12,6 +12,8 @@ typedef double number;
 typedef float number;
 #endif
 
+typedef void* pointer; 
+
 /* tlliValueToNumber
  *   Retrieves a number (IEEE standard single- or double-precision
  * floating point number) from a tlliValue
@@ -42,6 +44,9 @@ TLLI_EXPORT tlliReturn tlliIntToValue      (int num, tlliValue** val);
 
 TLLI_EXPORT tlliReturn tlliValueToString   (tlliValue* val, char** str, int size);
 TLLI_EXPORT tlliReturn tlliStringToValue   (char* str, tlliValue** val);
+
+TLLI_EXPORT tlliReturn tlliValueToPointer  (tlliValue* val, pointer* ptr);
+TLLI_EXPORT tlliReturn tlliPointerToValue  (pointer ptr, tlliValue** val);
 
 /* tlliRetainValue
  *   Retains a tlliValue

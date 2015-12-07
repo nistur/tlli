@@ -39,6 +39,10 @@ kind "ConsoleApp"
 files { "src/tlli-repl.c" }
 targetname "tlli"
 links { "tlli", "readline" }
+if os.getenv("TLLI_HAS_EXT") then
+   defines { "TLLI_HAS_EXT" }
+   links { "dl" }
+end
 
 project "tests"
 kind "ConsoleApp"
@@ -50,6 +54,6 @@ files { "tests/**.cpp" }
 files { "src/**.c" }
 excludes { "src/tlli-repl.c" }
 configuration "Debug"
--- postbuildcommands("build/debug/tests")
+  postbuildcommands("build/debug/tests")
 configuration "Release"
--- postbuildcommands("build/release/tests")
+  postbuildcommands("build/release/tests")

@@ -158,6 +158,33 @@ tlliReturn tlliStringToValue(char* str, tlliValue** val)
 	tlliReturn(SUCCESS);
 }
 
+
+tlliReturn tlliValueToPointer(tlliValue* val, pointer* ptr)
+{
+    if(val == NULL || ptr == NULL)
+        tlliReturn(NO_INPUT);
+
+    if(val->type != TLLI_VAL_PTR)
+        tlliReturn(INVALID);
+    
+    *ptr = *((pointer*)val->data);
+    
+    tlliReturn(SUCCESS);
+}
+
+tlliReturn tlliPointerToValue(pointer ptr, tlliValue** val)
+{
+    if(val == NULL)
+        tlliReturn(NO_INPUT);
+
+	*val = tlliMalloc(tlliValue);
+	(*val)->type = TLLI_VAL_PTR;
+	(*val)->data = tlliMalloc(pointer);
+	*((pointer*)(*val)->data) = ptr;
+
+    tlliReturn(SUCCESS);
+}
+
 tlliReturn tlliRetainValue(tlliValue* value)
 {
 	if(value == NULL) tlliReturn(NO_INPUT);

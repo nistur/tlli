@@ -9,6 +9,7 @@
 #define TLLI_VAL_INT  0x02
 #define TLLI_VAL_NUM  0x03
 #define TLLI_VAL_STR  0x04
+#define TLLI_VAL_PTR  0x05
 #define TLLI_VAL_FN   0x0F
 #define TLLI_VAL_CFN  0xFF
 

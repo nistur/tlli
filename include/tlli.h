@@ -99,6 +99,7 @@ typedef tlliValue*(*tlliFn)(int,tlliValue**);
 #define TLLI_NO_INPUT   2
 #define TLLI_OUT_OF_MEM 3
 #define TLLI_PARSE_ERR  4
+#define TLLI_INVALID    5
 
 /* tlliInitContext
  *   Initialises an instance of the tlli library. Will set up the lisp environment
