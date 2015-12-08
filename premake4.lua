@@ -44,6 +44,13 @@ if os.getenv("TLLI_HAS_EXT") then
    links { "dl" }
 end
 
+project "test-ext"
+kind "SharedLib"
+files { "ext/test/**.c" }
+targetprefix ( "" )
+targetsuffix ( ".tlli" )
+links { "tlli" }
+
 project "tests"
 kind "ConsoleApp"
 files { "tests/**.cpp" }

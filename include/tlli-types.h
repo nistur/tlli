@@ -42,7 +42,7 @@ TLLI_EXPORT tlliReturn tlliNumberToValue   (number num, tlliValue** val);
 TLLI_EXPORT tlliReturn tlliValueToInt      (tlliValue* val, int* num);
 TLLI_EXPORT tlliReturn tlliIntToValue      (int num, tlliValue** val);
 
-TLLI_EXPORT tlliReturn tlliValueToString   (tlliValue* val, char** str, int size);
+TLLI_EXPORT tlliReturn tlliValueToString   (tlliValue* val, char* str, int size);
 TLLI_EXPORT tlliReturn tlliStringToValue   (char* str, tlliValue** val);
 
 TLLI_EXPORT tlliReturn tlliValueToPointer  (tlliValue* val, pointer* ptr);

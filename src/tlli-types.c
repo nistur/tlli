@@ -105,7 +105,7 @@ tlliReturn tlliIntToValue(int num, tlliValue** val)
     tlliReturn(SUCCESS);
 }
 
-tlliReturn tlliValueToString(tlliValue* val, char** str, int size)
+tlliReturn tlliValueToString(tlliValue* val, char* str, int size)
 {
     if(val == NULL || str == NULL)
         tlliReturn(NO_INPUT);
@@ -132,13 +132,16 @@ tlliReturn tlliValueToString(tlliValue* val, char** str, int size)
     case TLLI_VAL_STR:
         sprintf(buffer, "%s", (char*)val->data);
         break;
+    case TLLI_VAL_PTR:
+        sprintf(buffer, "0x%X", (unsigned int)*(pointer*)val->data);
+        break;
     case TLLI_VAL_FN:
     case TLLI_VAL_CFN:
         sprintf(buffer, "function");
         break;
     }
 
-    memcpy(*str, buffer, MIN(size, strlen(buffer) + 1));
+    memcpy(str, buffer, MIN(size, strlen(buffer) + 1));
 
     tlliReturn(SUCCESS);
 }
@@ -178,8 +181,16 @@ tlliReturn tlliPointerToValue(pointer ptr, tlliValue** val)
         tlliReturn(NO_INPUT);
 
 	*val = tlliMalloc(tlliValue);
+    if(*val == NULL)
+        tlliReturn(OUT_OF_MEM);
 	(*val)->type = TLLI_VAL_PTR;
 	(*val)->data = tlliMalloc(pointer);
+    if((*val)->data == NULL)
+    {
+        tlliFree(*val);
+        tlliReturn(OUT_OF_MEM);
+    }
+
 	*((pointer*)(*val)->data) = ptr;
 
     tlliReturn(SUCCESS);

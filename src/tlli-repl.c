@@ -5,8 +5,15 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+tlliContext* g_context;
+
 #ifdef TLLI_HAS_EXT
 #include <dlfcn.h>
+#include <string.h>
+
+#ifndef TLLI_PATH_MAX
+#define TLLI_PATH_MAX 256
+#endif/*TLLI_PATH_MAX*/
 
 typedef struct _tlliExtListNode
 {
@@ -16,38 +23,80 @@ typedef struct _tlliExtListNode
 
 tlliExtListNode* g_extensions;
 
-typedef void(*tlliExtFn)();
+typedef void(*tlliExtRAIIFn)(tlliContext*);
 
+int doesFileExist(const char* file)
+{
+    FILE* fp = fopen(file, "r");
+    if(fp)
+    {
+        fclose(fp);
+        return 1;
+    }
+    return 0;
+}
+
+tlliReturn tlliFindPath(const char* ext, char* path)
+{
+    char* pPath = getenv("TLLI_PATH");
+
+    char* pTok = strtok(pPath, ":");
+    while(pTok)
+    {
+        char filepath[TLLI_PATH_MAX];
+        sprintf(filepath, "%s/%s.tlli.dylib", pTok, ext);
+        if(doesFileExist(filepath))
+        {
+            sprintf(path, "%s", filepath);
+            return TLLI_SUCCESS;
+        }
+        pTok = strtok(NULL, ":");
+    }
+    return TLLI_INVALID;
+}
 
 tlliValue* tlliLoadExtension(int nparams, tlliValue** params)
 {
-    void* pExt = dlopen("tlli_test.so", RTLD_NOW);
+    if(nparams != 1)
+        return tlliNil;
+    char extName[TLLI_PATH_MAX];
+    char extPath[TLLI_PATH_MAX];
+
+    if(tlliValueToString(params[0], extName, TLLI_PATH_MAX) != TLLI_SUCCESS)
+        return tlliNil;
+
+
+    if(tlliFindPath(extName, extPath) != TLLI_SUCCESS)
+        return tlliNil;
+    
+    
+    void* pExt = dlopen(extPath, RTLD_NOW);
 
     if(pExt == NULL)
         return tlliNil;
 
-    tlliExtFn initFn = dlsym(pExt, "tlliInit");
+    tlliExtRAIIFn initFn = dlsym(pExt, "tlliInit");
     if(initFn == NULL)
     {
         dlclose(pExt);
         return tlliNil;
     }
-    initFn();
+    initFn(g_context);
 
     tlliValue* val;
     tlliPointerToValue(pExt, &val);
     tlliRetainValue(val);
 
-    tlliExtListNode** ppListNode = &g_extensions;
-    while(*ppListNode) ppListNode = &(*ppListNode)->next;
-    *ppListNode = (tlliExtListNode*)malloc(sizeof(tlliExtListNode));
-    (*ppListNode)->next = NULL;
-    (*ppListNode)->ext = val;
+    tlliExtListNode* pListNode = (tlliExtListNode*)malloc(sizeof(tlliExtListNode));
+    pListNode->next = g_extensions;
+    pListNode->ext = val;
     
+    g_extensions = pListNode;
+
     return val;
 }
 
-bool doUnloadExtension(tlliValue* ext)
+tlliReturn doUnloadExtension(tlliValue* ext)
 {
     tlliExtListNode** ppListNodePrev = &g_extensions;
     tlliExtListNode* pListNodeNext = NULL;
@@ -59,30 +108,33 @@ bool doUnloadExtension(tlliValue* ext)
     {
         pListNodeNext = pListNode->next;
         pointer pCheckExt = NULL;
-        tlliValueToPointer(pListNode->ext, pCheckExt);
+        tlliValueToPointer(pListNode->ext, &pCheckExt);
         if(pCheckExt == pExt)
         {
-            tlliExtFn termFn = dlsym(pExt, "tlliTerminate");
+            tlliExtRAIIFn termFn = dlsym(pExt, "tlliTerminate");
             if(termFn != NULL)
-                termFn();
+                termFn(g_context);
             dlclose(pExt);
                 
             tlliReleaseValue(&pListNode->ext);
             free(pListNode);
             *ppListNodePrev = pListNodeNext; 
-            return true;
+            return TLLI_SUCCESS;
         }
         ppListNodePrev = &(*ppListNodePrev)->next;
         pListNode = pListNodeNext;        
     }
-    return false;
+    return TLLI_INVALID;
 }
 
 tlliValue* tlliUnloadExtension(int nparams, tlliValue** params)
 {
     if(nparams == 1)
     {
-        doUnloadExtension(params[0]);
+        if(doUnloadExtension(params[0]) == TLLI_SUCCESS)
+        {
+            return tlliTrue;
+        }
     }
     return tlliNil;
 }
@@ -91,17 +143,20 @@ tlliValue* tlliUnloadExtension(int nparams, tlliValue** params)
 
 int main(int argc, char** argv)
 {
-	tlliContext* context = 0;
-	if(tlliInitContext(&context) != TLLI_SUCCESS || context == 0)
+	if(tlliInitContext(&g_context) != TLLI_SUCCESS || g_context == 0)
 	{
 		fprintf(stderr, "Fatal error initialising TLLI\n");
 		return -1;
 	}
 
 #ifdef TLLI_HAS_EXT
-    if(tlliAddFunction(context, "load-extension", &tlliLoadExtension) != TLLI_SUCCESS)
+    if(tlliAddFunction(g_context, "load-extension", &tlliLoadExtension) != TLLI_SUCCESS)
     {
         fprintf(stderr, "Unable to add load-extension");
+    }
+    if(tlliAddFunction(g_context, "unload-extension", &tlliUnloadExtension) != TLLI_SUCCESS)
+    {
+        fprintf(stderr, "Unable to add unload-extension");
     }
 #endif/*TLLI_HAS_EXT*/
 
@@ -110,15 +165,15 @@ int main(int argc, char** argv)
 	while(1)
 	{
 		char* str = readline("tlli> ");
-		if(tlliEvaluate(context, str, &value) != TLLI_SUCCESS)
+		if(tlliEvaluate(g_context, str, &value) != TLLI_SUCCESS)
 		{
-			tlliValueToString(value, &buffer, 256);
+			tlliValueToString(value, buffer, 256);
 			fprintf(stderr, "%s\n\t%s\n", tlliError(), buffer);
 			tlliReleaseValue(&value);
 			continue;
 		}
 
-		tlliValueToString(value, &buffer, 256);
+		tlliValueToString(value, buffer, 256);
 		printf("%s\n", buffer);
 		tlliReleaseValue(&value);
 
@@ -131,7 +186,7 @@ int main(int argc, char** argv)
     }
 #endif/*TLLI_HAS_EXT*/
 
-	tlliTerminateContext(&context);
+	tlliTerminateContext(&g_context);
 	free(buffer);
 	return 0;
 }
