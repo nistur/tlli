@@ -70,11 +70,6 @@ extern "C" {
 # define TLLI_EXPORT
 #endif
 
-/* tlliReturn
- * return type for tlli functions
- */
-typedef int tlliReturn;
-
 /* tlliContext
  * Opaque type for library context
  */
@@ -94,12 +89,15 @@ typedef tlliValue*(*tlliFn)(int,tlliValue**);
 /*******************************
  * RETURN CODES
  ******************************/
-#define TLLI_SUCCESS    0
-#define TLLI_NO_CONTEXT 1
-#define TLLI_NO_INPUT   2
-#define TLLI_OUT_OF_MEM 3
-#define TLLI_PARSE_ERR  4
-#define TLLI_INVALID    5
+typedef enum
+{
+    TLLI_SUCCESS,
+    TLLI_NO_CONTEXT,
+    TLLI_NO_INPUT,
+    TLLI_OUT_OF_MEM,
+    TLLI_PARSE_ERR,
+    TLLI_INVALID,
+} tlliReturn;
 
 /* tlliInitContext
  *   Initialises an instance of the tlli library. Will set up the lisp environment

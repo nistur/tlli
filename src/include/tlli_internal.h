@@ -4,14 +4,20 @@
 #include "tlli.h"
 #include "../util/map.h"
 
-#define TLLI_VAL_NIL  0x00
-#define TLLI_VAL_BOOL 0x01
-#define TLLI_VAL_INT  0x02
-#define TLLI_VAL_NUM  0x03
-#define TLLI_VAL_STR  0x04
-#define TLLI_VAL_PTR  0x05
-#define TLLI_VAL_FN   0x0F
-#define TLLI_VAL_CFN  0xFF
+/***************************************
+ * 
+ ***************************************/
+typedef enum
+{
+    TLLI_VAL_NIL = 0x00,
+    TLLI_VAL_BOOL= 0x01,
+    TLLI_VAL_INT = 0x02,
+    TLLI_VAL_NUM = 0x03,
+    TLLI_VAL_STR = 0x04,
+    TLLI_VAL_PTR = 0x05,
+    TLLI_VAL_FN  = 0x0F,
+    TLLI_VAL_CFN = 0xFF,
+} tlliValueType;
 
 /***************************************
  * Library context
@@ -22,6 +28,9 @@ struct _tlliContext
 	map* symbolTable;
 };
 
+/***************************************
+ * 
+ ***************************************/
 struct _tlliValue
 {
 	unsigned int  ref;
@@ -29,11 +38,17 @@ struct _tlliValue
 	void* data;
 };
 
+/***************************************
+ * 
+ ***************************************/
 typedef struct _tlliCFunction
 {
 	tlliFn function;
 } tlliCFunction;
 
+/***************************************
+ * 
+ ***************************************/
 typedef struct _tlliFunction
 {
 	char** paramlist;
@@ -41,6 +56,9 @@ typedef struct _tlliFunction
 	char** funcTokens;
 } tlliFunction;
 
+/***************************************
+ * 
+ ***************************************/
 void tlliInitStaticValues();
 
 /***************************************
@@ -62,10 +80,16 @@ extern const char* g_tlliErrors[];
 	return TLLI_##x;			\
     }
 
+/***************************************
+ * 
+ ***************************************/
 #ifndef NULL
 # define NULL 0
 #endif
 
+/***************************************
+ * 
+ ***************************************/
 #ifndef MAX
 # define MAX(a,b) (((a)>(b))?(a):(b))
 #endif
