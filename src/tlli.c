@@ -288,8 +288,43 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
             val->type = TLLI_VAL_STR;
             int len = strlen(tokens[*index]) - 1;
             val->data = tlliMallocArray(char, len);
-            memcpy(val->data, &(tokens[*index][1]), len-1);
-            ((char*)val->data)[len-1] = '\0';
+
+            // Turn all escaped characters into their actual value
+            // TODO: Needs some test cases!
+            char c;
+            int i = 0;
+            char* iter = (char*) val->data;
+            for(; i < len - 1; i++, iter++)
+            {
+                c = tokens[*index][i + 1];
+
+                if(c == '\\' && i < len - 2)
+                {
+                    switch(tokens[*index][i + 2])
+                    {
+                        case 'n':
+                            *iter = '\n';
+                        break;
+                        case 'b':
+                            *iter = '\b';
+                        break;
+                        case 't':
+                            *iter = '\t';
+                        break;
+                        case '\\':
+                            *iter = '\\';
+                        break;
+                        case '\"':
+                            *iter = '\"';
+                        break;
+                    }
+                    i++;
+                }
+                else
+                    *iter = c;
+            }
+            // NULL termination!
+            *iter = 0;
         }
         else if( isdigit(tokens[*index][0]) )
         {
