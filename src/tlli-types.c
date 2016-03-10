@@ -53,6 +53,8 @@ tlliReturn tlliValueToNumber(tlliValue* val, number* num)
     case TLLI_VAL_NUM:
         *num = *(number*)val->data;
         break;
+    default:
+        tlliReturn(INVALID);
     }
 
     tlliReturn(SUCCESS);
@@ -87,6 +89,8 @@ tlliReturn tlliValueToInt(tlliValue* val, int* num)
     case TLLI_VAL_NUM:
         *num = *(number*)val->data;
         break;
+    default:
+        tlliReturn(INVALID);
     }
 
     tlliReturn(SUCCESS);
@@ -139,6 +143,29 @@ tlliReturn tlliValueToString(tlliValue* val, char* str, int size)
     case TLLI_VAL_CFN:
         sprintf(buffer, "function");
         break;
+    case TLLI_VAL_LIST:
+    {
+        char tmp[256];
+        char index = 0;
+        tlliListNode* node = val->data;
+        while(node)
+        {
+            if(tlliValueToString(node->data, &tmp[index], 256-index) !=
+               TLLI_SUCCESS)
+            {
+                return g_tlliError;
+            }
+            int len = strlen(tmp[index]);
+            index += len;
+            node = node->next;
+            if(node)
+            {
+                sprintf(&tmp[index], ", ");
+                index += 2;
+            }
+        }
+        sprintf(buffer, "(%s)", tmp);
+    }
     }
 
     memcpy(str, buffer, MIN(size, strlen(buffer) + 1));

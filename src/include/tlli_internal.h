@@ -15,6 +15,7 @@ typedef enum
     TLLI_VAL_NUM = 0x03,
     TLLI_VAL_STR = 0x04,
     TLLI_VAL_PTR = 0x05,
+    TLLI_VAL_LIST= 0x06,
     TLLI_VAL_FN  = 0x0F,
     TLLI_VAL_CFN = 0xFF,
 } tlliValueType;
@@ -37,6 +38,15 @@ struct _tlliValue
 	unsigned char type;
 	void* data;
 };
+
+/***************************************
+ * 
+ ***************************************/
+typedef struct _tlliListNode
+{
+    tlliValue* data;
+    struct _tlliListNode* next;
+} tlliListNode;
 
 /***************************************
  * 
