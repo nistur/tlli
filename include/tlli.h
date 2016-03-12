@@ -96,6 +96,8 @@ typedef enum
     TLLI_NO_INPUT,
     TLLI_OUT_OF_MEM,
     TLLI_PARSE_ERR,
+    TLLI_TYPE_ERR,
+    TLLI_OUT_OF_BOUNDS,
     TLLI_INVALID,
 } tlliReturn;
 
@@ -166,11 +168,16 @@ TLLI_EXPORT tlliReturn tlliAddFunction     (tlliContext*  context, const char* n
  **************/    
 #include "tlli-types.h"
 
+/**************
+ * TLLI LISTS *
+ **************/    
+#include "tlli-list.h"
+    
 /* tlliError
  *   Returns a human-readable error message for the last TLLI function called
  */    
 TLLI_EXPORT const char*  tlliError();
-
+    
 #ifdef __cplusplus
 }
 #endif/*__cplusplus*/

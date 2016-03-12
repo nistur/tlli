@@ -1,5 +1,3 @@
-#include "conditional.h"
-
 #include "tlli_internal.h"
 
 #include <string.h>
@@ -44,7 +42,9 @@ tlliValue* tlli_Equal(int num, tlliValue** args)
 			return *(number*)v1->data ? tlliTrue : tlliFalse;
 		case TLLI_VAL_STR:
 			return *(char*)v1->data && strlen(v1->data) ? tlliTrue : tlliFalse;
-		}
+        case TLLI_VAL_LIST:
+            return tlliTrue; // a list of any length is true?
+        }
 		return tlliTrue;
 	}
 	int i;
@@ -75,6 +75,33 @@ tlliValue* tlli_Equal(int num, tlliValue** args)
 		case TLLI_VAL_CFN: 
 			if(v1->data != args[i]->data)
 				return tlliFalse;
+        case TLLI_VAL_LIST:
+        {
+            tlliListNode* n1 = 0;
+            tlliListNode* n2 = 0;
+            tlliValue* lv[2];
+            
+            if(args[i]->type != TLLI_VAL_LIST)
+                return tlliFalse;
+            while(1)
+            {
+                tlliReturn r1 = tlliListNext(v1, &n1, &lv[0]);
+                tlliReturn r2 = tlliListNext(args[i], &n2, &lv[2]);
+                if(r1 != r2)
+                    return tlliFalse; // if they both fail, that's fine
+
+                if(r1 == TLLI_OUT_OF_BOUNDS)
+                    break;
+
+                if(r1 == TLLI_SUCCESS &&
+                   tlli_Equal(2, lv) == tlliFalse)
+                    return tlliFalse;
+                
+                // if we get here, we're either in an error state
+                // which we cannot handle, or we're successful, so
+                // move onto the next entry
+            }
+        }
 		}
 	}
 
