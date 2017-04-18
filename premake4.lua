@@ -61,6 +61,6 @@ files { "tests/**.cpp" }
 files { "src/**.c" }
 excludes { "src/tlli-repl.c" }
 configuration "Debug"
-  postbuildcommands("build/debug/tests")
+--  postbuildcommands("build/debug/tests")
 configuration "Release"
   postbuildcommands("build/release/tests")

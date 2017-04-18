@@ -1,0 +1,8 @@
+#temporary files
+*~
+
+#build files
+*.make
+Makefile
+build/
+obj/

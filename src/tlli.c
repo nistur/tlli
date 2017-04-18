@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 // reimplementation of strtok_r but without
 // the `sep` param as it should tokenise
@@ -84,6 +85,8 @@ tlliReturn tlliClearContext(tlliContext* context)
     tlliEvaluate(context, "(defun <= (a b) (if (< a b) (#t) (if (= a b) (#t) (#f))))", NULL);
     tlliEvaluate(context, "(defun > (a b) (if (<= a b) (#f) (#t)))", NULL);
     tlliEvaluate(context, "(defun >= (a b) (if (< a b) (#f) (#t)))", NULL);
+
+    //   tlliEvaluate(context, "(+ '(1 2) '(3 4))", NULL);
 
     tlliReturn(SUCCESS);
 }
@@ -288,8 +291,43 @@ tlliReturn tlliParseFunc(tlliContext* context, char** tokens, int* index, tlliVa
             val->type = TLLI_VAL_STR;
             int len = strlen(tokens[*index]) - 1;
             val->data = tlliMallocArray(char, len);
-            memcpy(val->data, &(tokens[*index][1]), len-1);
-            ((char*)val->data)[len-1] = '\0';
+
+            // Turn all escaped characters into their actual value
+            // TODO: Needs some test cases!
+            char c;
+            int i = 0;
+            char* iter = (char*) val->data;
+            for(; i < len - 1; i++, iter++)
+            {
+                c = tokens[*index][i + 1];
+
+                if(c == '\\' && i < len - 2)
+                {
+                    switch(tokens[*index][i + 2])
+                    {
+                        case 'n':
+                            *iter = '\n';
+                        break;
+                        case 'b':
+                            *iter = '\b';
+                        break;
+                        case 't':
+                            *iter = '\t';
+                        break;
+                        case '\\':
+                            *iter = '\\';
+                        break;
+                        case '\"':
+                            *iter = '\"';
+                        break;
+                    }
+                    i++;
+                }
+                else
+                    *iter = c;
+            }
+            // NULL termination!
+            *iter = 0;
         }
         else if( isdigit(tokens[*index][0]) )
         {
@@ -380,7 +418,7 @@ tlliReturn tlliParse(tlliContext* context, char** tokens, int* index, tlliValue*
 {
     return tlliParseFunc(context, tokens, index, rtn, NULL, NULL);
 }
-
+tlliReturn tlliParseList(tlliContext* context, char* str, tlliValue** list);
 tlliReturn tlliEvaluate(tlliContext* context, char* str, tlliValue** rtn)
 {
     if(context == 0)
@@ -388,6 +426,10 @@ tlliReturn tlliEvaluate(tlliContext* context, char* str, tlliValue** rtn)
 
     if(str == 0)
         tlliReturn(NO_INPUT);
+
+    tlliValue* list = NULL;
+
+    tlliParseList(context, str, &list);
 
     // tokenise
     char** tokens = NULL;
