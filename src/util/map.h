@@ -12,5 +12,7 @@ void* MapGet(map* map_p, const char* key);
 map_it* MapFind(map* map_p, const char* key);
 void* MapReplace(map_it* it, void* value);
 void MapFindFree(map_it* it);
+void MapRemove(map_it* it);
+map_it* MapForEach(map* map_p, map_it* it);
 
 #endif/*__UTIL_MAP_H__*/

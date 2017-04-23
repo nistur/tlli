@@ -93,3 +93,11 @@ void MapFindFree(map_it* it)
   if(it)
     free(it);
 }
+
+void MapRemove(map_it* it)
+{
+}
+
+map_it* MapForEach(map* map, map_it* it)
+{
+}
